@@ -1,0 +1,32 @@
+[tool.poetry]
+name = "src"
+version = "0.1.0"
+description = ""
+authors = ["daria425 <darianaumova5@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+google-cloud-aiplatform = ">=1.64"
+requests = "^2.32.3"
+black = "^24.10.0"
+python-dotenv = "^1.0.1"
+beautifulsoup4 = "^4.12.3"
+pandas = "^2.2.3"
+pypdf = "^5.2.0"
+pytest = "^8.3.4"
+playwright = "^1.49.1"
+google-auth = "^2.38.0"
+google-auth-oauthlib = "^1.2.1"
+google-auth-httplib2 = "^0.2.0"
+google-api-python-client = "^2.160.0"
+fastapi = {extras = ["standard"], version = "^0.115.8"}
+gunicorn = "^23.0.0"
+motor = "^3.7.0"
+google-cloud-pubsub = "^2.28.0"
+uuid = "^1.30"
+playwright-stealth = "^1.0.6"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
