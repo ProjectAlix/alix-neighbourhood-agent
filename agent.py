@@ -107,7 +107,7 @@ class AgentWithTools(Agent):
 
 class EventInfoExtractionAgent(AgentWithTools):
     def __init__(self):
-        super().__init__(task="EXTRACT_EVENT_INFO")
+        super().__init__(task="EXTRACT_EVENT_DETAILS")
 
     def _create_extract_function_declaration(
         self, return_as_json=False
@@ -122,11 +122,6 @@ class EventInfoExtractionAgent(AgentWithTools):
                         "type": "string",
                         "nullable": False,
                         "description": "A category tag for the event, must be one from the provided list: Arts, Children's Channel, Community Support, Festive, Health & Sport, Music, Playtime, Skill & Professional Development, Social, Workshop",
-                    },
-                    "event_name": {
-                        "type": "string",
-                        "nullable": False,
-                        "description": "Title or name of the event",
                     },
                     "description": {
                         "type": "string",
@@ -148,26 +143,14 @@ class EventInfoExtractionAgent(AgentWithTools):
                         "nullable": True,
                         "description": "The cost of the event, if available or null",
                     },
-                    "booking_details": {
-                        "type": "string",
-                        "nullable": True,
-                        "description": "A link to book the event or get additional details, if available or null",
-                    },
-                    "is_within_2_weeks": {
-                        "type": "boolean",
-                        "nullable": False,
-                        "description": f"True if date and time of event is within 2 weeks of {datetime.now().strftime('%d %b %Y')}. False otherwise",
-                    },
                 },
                 "required": [
                     "tag",
-                    "event_name",
                     "description",
                     "date_and_time",
                     "location",
                     "cost",
-                    "booking_details",
-                    "is_within_2_weeks",
+        
                 ],
             },
         }

@@ -193,7 +193,7 @@ me156jq_websites_config={
     "event_details": {
       "sections": [
         { "content": "10:30 AM - 12:00 PM", "links": ["whats-on/events/2025-02/20/art-club-16092/"] },
-        { "content": "Romney Marsh Community Hub", "links": ["whats-on/events/2025-02/20/art-club-16092/"] },
+        { "content": "Romney Marsh Community Hub", "links": ["https://www.kentonline.co.uk/whats-on/events/2025-02/20/art-club-16092/"] },
       ]
     },
     "detail_link":"https://www.kentonline.co.uk/whats-on/events/whats-on/events/2025-02/20/art-club-16092/"
