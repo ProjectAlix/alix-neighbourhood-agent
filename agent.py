@@ -286,3 +286,10 @@ class EventResearchAgent(AgentWithTools):
         print(res)
         output = self._get_function_output(res) # TO-DO try JSON parsing text if it doesnt work
         return output
+
+class NewsletterWriterAgent(Agent):
+    def __init__(self):
+        super().__init__(task="WRITE_NEWSLETTER")
+    def run_task(self, contents:str):
+        res=self.generate_response(contents=contents)
+        print(res.candidates[0].content.parts[0].text)

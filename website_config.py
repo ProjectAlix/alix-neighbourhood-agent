@@ -1,4 +1,4 @@
-
+# TO - DO add domain to all
 n19qz_websites_config = {
     "postcode":"N19QZ", 
     "websites": [
@@ -185,6 +185,7 @@ me156jq_websites_config={
 "websites":[
     {
         "url": "https://www.kentonline.co.uk/whats-on/events/", 
+        "domain":"https://www.kentonline.co.uk",
         "example":"""
 {
     "title": "Art Club",

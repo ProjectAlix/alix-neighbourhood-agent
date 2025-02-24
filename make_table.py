@@ -1,6 +1,7 @@
 import pandas as pd
 import json
 from typing import List
+from agent import NewsletterWriterAgent
 def make_table(processed_events:List):
     formatted_events=[]
     for event in processed_events:
@@ -14,8 +15,4 @@ def make_table(processed_events:List):
     df=pd.DataFrame(formatted_events)
     return df
 
-with open("final_output.json", "r") as f:
-    processed_events=json.loads(f.read())
 
-formatted_events=make_table(processed_events)
-formatted_events.to_csv("n19qz.csv")

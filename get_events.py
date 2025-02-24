@@ -72,7 +72,20 @@ async def extract_events(event_research_agent:EventResearchAgent, website_list: 
             try:
                 output = await asyncio.to_thread(event_research_agent.run_task, prompt)  # Run in thread pool
                 if isinstance(output, dict) and "events" in output:
-                    return output["events"]
+                    events = [
+    {
+        **event,
+        "detail_link": (
+            website["url"]  # ✅ Set to website["url"] if empty
+            if not event.get("detail_link") or event["detail_link"].strip() == ""
+            else website.get("domain", "") + event["detail_link"]
+            if website.get("domain", "") not in event["detail_link"]
+            else event["detail_link"]
+        ),
+    }
+    for event in output["events"]# Fix: use output["events"], not output
+]
+                    return events
                 else:
                     logging.error(f"Unexpected response format from {website['url']}: {output}")
                     return []
@@ -87,10 +100,11 @@ async def extract_events(event_research_agent:EventResearchAgent, website_list: 
     results = await asyncio.gather(*tasks)
 
     extracted_events = [event for sublist in results for event in sublist]
+    print(extracted_events)
 
     # Step 2: Save combined events to JSON
-    # with open("extracted_events.json", "w") as f:
-    #     json.dump(extracted_events, f, indent=2)
+    with open("extracted_events.json", "w") as f:
+        json.dump(extracted_events, f, indent=2)
 
     return extracted_events
 
@@ -101,8 +115,8 @@ async def get_event_details(event_info_extraction_agent, extracted_events: List)
             if event.get("detail_link") and event.get("detail_link")!="":
                 content = await read_webpage(event["detail_link"], get_text=True)
                 if content is None:
-                    logging.error(f"Skipping {event['title']} due to missing content.")
-                    return event # Return the unmodified event
+                    logging.error(f"Skipping {event['title']} due to missing content. Sending JSON to agent")
+                    content=json.dumps(event)
             else:
                 content=json.dumps(event)
             prompt = f"Event:\n{content}"
@@ -114,11 +128,11 @@ async def get_event_details(event_info_extraction_agent, extracted_events: List)
                         if isinstance(output, dict):
                             event['details'] = output  # Update event with extracted details
                         else:
-                            logging.error(f"Unexpected response format from {event['detail_link']}: {output}")
+                            logging.error(f"Unexpected response format from {event['detail_link']} while getting event details: {output}")
                         return event  # Return modified event
                     except Exception as e:
                         wait_time = base_delay * (2 ** attempt) + random.uniform(0, 0.5)
-                        logging.error(f"Error processing {event['detail_link']}: {e}. Retrying in {wait_time:.2f} seconds...")
+                        logging.error(f"Error processing {event['detail_link']} while getting event details: {e}. Retrying in {wait_time:.2f} seconds...")
                         await asyncio.sleep(wait_time)
 
             logging.error(f"Failed to process {event['detail_link']} after {max_retries} retries. Skipping.")
@@ -136,13 +150,15 @@ async def get_events(event_research_agent: EventResearchAgent, event_info_extrac
     website_list=[website.model_dump(by_alias=True) for website in website_list]
     extracted_events=await (extract_events(event_research_agent,website_list))
     processed_events=await (get_event_details(event_info_extraction_agent, extracted_events))
-    with open("final_output.json", "w") as f:
-        f.write(json.dumps(processed_events))
+    # with open("final_output.json", "w") as f:
+    #     f.write(json.dumps(processed_events))
     end_time = time.time()  # End timing
     elapsed_time = end_time - start_time
     print(f"Script completed in {elapsed_time:.2f} seconds.")
+    return processed_events
 
-event_research_agent=EventResearchAgent()
-event_info_extraction_agent=EventInfoExtractionAgent()
-website_config=WebsiteConfig(**me156jq_websites_config)
-asyncio.run(get_events(event_research_agent, event_info_extraction_agent, website_config))
+#TO - DO append the domain to an extracted detail link if its not there
+# event_research_agent=EventResearchAgent()
+# event_info_extraction_agent=EventInfoExtractionAgent()
+# website_config=WebsiteConfig(**me156jq_websites_config)
+# asyncio.run(get_events(event_research_agent, event_info_extraction_agent, website_config))
