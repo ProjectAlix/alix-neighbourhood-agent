@@ -1,4 +1,4 @@
-from app.db.database_connection import db_connection
+from database_connection import db_connection
 
 import logging
 class DatabaseService:

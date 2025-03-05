@@ -293,3 +293,4 @@ class NewsletterWriterAgent(Agent):
     def run_task(self, contents:str):
         res=self.generate_response(contents=contents)
         print(res.candidates[0].content.parts[0].text)
+        return res.candidates[0].content.parts[0].text
