@@ -4,38 +4,41 @@ from website_config_schema import WebsiteConfig
 from get_events import get_events
 from make_table import make_table
 from email_service import EmailService
-import logging
+from typing import List
+import logging, io
+
 
 
 
    
-async def generate_newsletter():
+async def generate_newsletter(recipient_emails:List[str]=[]):
     try:
         email_service=EmailService(sender_email="daria@projectalix.com")
-        recipient_email="darianaumova5@gmail.com"
         event_research_agent=EventResearchAgent()
         event_info_extraction_agent=EventInfoExtractionAgent()
         newsletter_writer_agent=NewsletterWriterAgent()
         website_config=WebsiteConfig(**me156jq_websites_config)
         processed_events=await get_events(event_research_agent, event_info_extraction_agent, website_config)
         formatted_events=make_table(processed_events)
-        csv_file_path="me156jq_table.csv"
-        md_file_path="me156jq.md"
-        formatted_events.to_csv(csv_file_path)
-        formatted_events=formatted_events.to_string()
+        csv_buffer=io.StringIO()
+        formatted_events.to_csv(csv_buffer, index=False)
+        csv_buffer.seek(0)
         prompt=f"""
         Event listings:
         ---------------
-        {formatted_events}
+        {formatted_events.to_string()}
         """
         newsletter=newsletter_writer_agent.run_task(prompt)
-        with open(md_file_path, "w") as f:
-            f.write(newsletter)
-        email_service.send_email_with_attachment(content="A newsletter", subject="Newsletter", recipient_email=recipient_email, attachment_file_paths=[csv_file_path, md_file_path])
+        attachments={
+"events.csv":csv_buffer.getvalue(),
+"newsletter.md":newsletter
+        }
+        email_service.send_email_with_attachment(content="A newsletter", subject="Newsletter", recipient_emails=recipient_emails, attachments=attachments)
+        message="Newsletter sent successfully!"
         response= {
             "message": message, 
             "data":{
-                "text": newsletter, "table": formatted_events # Maybe we can display the response on the frontend as well idkkkk
+                "text": newsletter, "table": formatted_events.to_string() # Maybe we can display the response on the frontend as well idkkkk
             }
         } 
         print(response)
