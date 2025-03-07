@@ -18,7 +18,8 @@ class EmailService:
             from_email = self.sender_email
             to_email = recipient_email
             content = Content("text/plain", content)
-            mail = Mail(from_email, to_email, subject, content)
+            mail = Mail(from_email, to_emails=to_email, subject=subject, plain_text_content="hi")
+            print(recipient_email)
             if attachments:
                 for file_name, file_content in attachments.items():
                     attachment = Attachment()
@@ -29,6 +30,8 @@ class EmailService:
                     mail.add_attachment(attachment)
             try:
                 response = self.sendgrid_client.send(mail)
+                print(f"email sent to:{recipient_email}")
                 logging.info(f"Email with attachment sent successfully! Status code: {response.status_code}")
             except Exception as e:
                 logging.error(f"Error sending email: {e}")
+
